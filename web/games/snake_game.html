@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Snake Game</title>
+</head>
+<body style="color: black; font-weight: bold; background-color: aliceblue; font-family: cursive">
+
+<div id="Menu" class="col-md-6" style="align-content: center">
+  <div class="row" style="height: 50px">
+    <div id="game_score" class="col-md-3">
+      SCORE : <span></span>
+    </div>
+
+    <div id="disp_msg" class="col-md-3"></div>
+
+  </div>
+  <button id="start" style="cursor: pointer">
+    Start
+  </button>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="./Snake.js"></script>
+<script>
+  var msgObj = {
+    WELCOME: "Welcome PYTHON, born in JAVA, in relationship with <i>MONGODB</i>, JOB: eat <i>JAVASCRIPT<i>....R u <i>REDIS</i>, press start",
+    GAME_OVER: "<i>!!!OOPS!!!</i>GAME OVER. Return with more OBJECTS next time, hail OBJECT ORIENTED PROGRAMMING",
+    SELF_COLLIDE: "R u kidding me, u ate urself, WHAT R U?? a BUG ? Lemme fix you"
+  };
+  var displayMsg = '';
+  $(document).ready(function () {
+    $('#disp_msg').html(msgObj.WELCOME);
+  });
+
+  //Starts the game
+  $('#start').click(function () {
+    reset();
+  });
+
+  //Game Objects
+  var canvas,
+      ctx,
+      grid,
+      mySnake
+      ;
+  var speed = 15;
+  var tileSize = 20;
+  var food = null;
+  var score = 0;
+  var gameThread = null;
+
+  function main() {
+    canvas = document.createElement("canvas");
+    canvas.width = COL * tileSize;
+    canvas.height = ROW * tileSize;
+    ctx = canvas.getContext("2d");
+    document.body.appendChild(canvas);
+    paintCanvas();
+  }
+
+  /**
+   * Draws the canvas
+   */
+  function paintCanvas() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  /**
+   * Updates the score
+   */
+  function updateScore() {
+    $('#game_score').find('span').html(score);
+  }
+
+  /**
+   * Draws everyting on board
+   */
+  function draw() {
+    paintCanvas();
+    mySnake.crawl();
+    mySnake.drawSnake();
+    if (!food.isFoodPresent()) {
+      food.cookFood();
+    }
+    food.drawFood();
+    //Check for collisions
+    handleCollision();
+  }
+
+  function init() {
+    var midPoint = new Point(COL / 2, ROW / 2);
+    mySnake = new Snake(midPoint, ctx);
+    food = new Food(ctx);
+    gameThread = setInterval(draw, 1000 / speed);
+    listenSnakeMovement();
+    updateScore();
+  }
+
+  function reset() {
+    $('#disp_msg').html(msgObj.WELCOME);
+    score = 0;
+    updateScore();
+    init();
+  }
+
+  function gameOver() {
+    var $gameOver = $('#disp_msg');
+
+    $gameOver.show();
+    if (displayMsg && displayMsg != '') {
+      $gameOver.html(displayMsg);
+    } else {
+      $gameOver.html(msgObj.disp_msg);
+    }
+  }
+  main();
+</script>
+
+</body>
+</html>
